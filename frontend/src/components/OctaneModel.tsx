@@ -1,75 +1,37 @@
-import React, { useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
-import { useTexture } from '@react-three/drei';
+// src/components/OctaneModel.tsx
+import React, { Suspense } from 'react'; // Removed useRef as it wasn't used directly here
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, useGLTF, Environment, Html } from '@react-three/drei'; // Added Html for loader
 
-interface OctaneModelProps {
-  textureUrl: string | null;
-  colors: string[];
+// Simple Loader Component
+function Loader() {
+  return <Html center style={{ color: 'white' }}>Loading...</Html>;
 }
 
-const OctaneModel: React.FC<OctaneModelProps> = ({ textureUrl, colors }) => {
-  const group = useRef<THREE.Group>(null);
-  
-  // In a real implementation, we would load an actual Octane model
-  // For now, we'll use a simple car-like shape as a placeholder
-  useFrame(() => {
-    if (group.current) {
-      group.current.rotation.y += 0.005;
-    }
-  });
+// Component to load and display the GLB/GLTF model
+function Model(props: any) {
+  // Path confirmed to be likely correct by 304 status
+  const { scene } = useGLTF('/octane.glb');
+  // You might still need to adjust scale/position
+  return <primitive object={scene} scale={1.0} {...props} />;
+}
 
-  // Create a material with the primary color
-  const primaryColor = colors[0] || '#FF0000';
-  const secondaryColor = colors[1] || '#000000';
-  
-  // Create a texture if a URL is provided
-  const texture = textureUrl ? useTexture(textureUrl) : null;
-  
-  // Create materials
-  const bodyMaterial = new THREE.MeshStandardMaterial({
-    color: new THREE.Color(primaryColor),
-    roughness: 0.3,
-    metalness: 0.8,
-  });
-  
-  const detailMaterial = new THREE.MeshStandardMaterial({
-    color: new THREE.Color(secondaryColor),
-    roughness: 0.5,
-    metalness: 0.5,
-  });
-  
-  // If we have a texture, apply it to the body material
-  if (texture) {
-    bodyMaterial.map = texture;
-  }
+// Preload the model
+useGLTF.preload('/octane.glb');
 
+const OctaneModel: React.FC = () => {
   return (
-    <group ref={group}>
-      {/* This is a simplified car shape for demonstration */}
-      <mesh position={[0, 0, 0]} material={bodyMaterial}>
-        <boxGeometry args={[2, 0.5, 4]} />
-      </mesh>
-      
-      {/* Wheels */}
-      <mesh position={[-1, -0.5, 1.3]} material={detailMaterial} rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.5, 0.5, 0.3, 32]}  />
-      </mesh>
-      <mesh position={[1, -0.5, 1.3]} material={detailMaterial} rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.5, 0.5, 0.3, 32]}  />
-      </mesh>
-      <mesh position={[-1, -0.5, -1.3]} material={detailMaterial} rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.5, 0.5, 0.3, 32]}  />
-      </mesh>
-      <mesh position={[1, -0.5, -1.3]} material={detailMaterial} rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.5, 0.5, 0.3, 32]}  />
-      </mesh>
-      
-      {/* Windshield */}
-      <mesh position={[0, 0.5, 0.5]} rotation={[Math.PI / 6, 0, 0]} material={detailMaterial}>
-        <boxGeometry args={[1.8, 0.1, 1.5]} />
-      </mesh>
-    </group>
+    <div className="w-full h-96 rounded-lg overflow-hidden border border-gray-700 bg-gray-800">
+      <Canvas camera={{ position: [0, 2, 5], fov: 50 }}>
+        <ambientLight intensity={0.5} />
+        <directionalLight position={[10, 10, 5]} intensity={1} />
+        <Suspense fallback={<Loader />}> {/* Use the Loader component */}
+          <Model />
+          <Environment preset="sunset" background={false} />
+        </Suspense>
+        <OrbitControls enableZoom={true} enablePan={true} />
+      </Canvas>
+    </div>
   );
 };
 

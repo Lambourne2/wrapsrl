@@ -1,7 +1,4 @@
-.App {
-  text-align: center;
-}
-
+/* Keep logo animation if needed */
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -13,21 +10,6 @@
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -36,3 +18,17 @@
     transform: rotate(360deg);
   }
 }
+
+/* Remove .App, .App-header, .App-link styles as Tailwind will handle them */
+
+/* --- Modification Start --- */
+/* Add subtle page transition animation */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+main {
+  animation: fadeIn 0.5s ease-in-out;
+}
+/* --- Modification End --- */

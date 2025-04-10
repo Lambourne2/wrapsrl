@@ -5,7 +5,7 @@ dotenv.config();
 
 const config = {
   port: process.env.PORT || 5000,
-  mongoUri: process.env.MONGO_URI || 'mongodb://localhost:27017/rocket-league-decals',
+  mongoUri: process.env.MONGO_URI || 'mongodb+srv://<user>:<password>@cluster0.abcdefg.mongodb.net/?retryWrites=true&w=majority',
   jwtSecret: process.env.JWT_SECRET || 'your-secret-key',
   openAiApiKey: process.env.OPENAI_API_KEY || '',
   replicateApiKey: process.env.REPLICATE_API_KEY || '',
